@@ -3,143 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>প্রো টেম্প মেইল v2</title>
+    <title>প্রো টেম্প মেইল - আনলিমিটেড</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .loading-spin { animation: spin 1s linear infinite; }
+        body { background-color: #0b0f1a; color: #e2e8f0; font-family: sans-serif; }
+        .glass { background: rgba(23, 32, 53, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-xl w-full glass-card rounded-3xl p-6 shadow-2xl">
-        <h1 class="text-3xl font-bold text-center mb-6 text-blue-400">
-            <i class="fas fa-envelope-open-text mr-2"></i>প্রো টেম্প মেইল
+    <div class="max-w-md w-full glass rounded-3xl p-6 shadow-2xl">
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-500">
+            <i class="fas fa-shield-alt mr-2"></i>প্রো টেম্প মেইল v3
         </h1>
 
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-400 mb-2">আপনার মেইল (এডিট করতে পারেন):</label>
-            <div class="flex items-center bg-slate-900 rounded-xl p-1 border border-slate-700 focus-within:border-blue-500 transition">
-                <input type="text" id="mailAddress" 
-                    class="bg-transparent w-full p-3 outline-none text-blue-300 font-mono text-sm" 
-                    placeholder="example@1secmail.com">
-                <button onclick="copyEmail()" class="px-4 py-2 text-gray-400 hover:text-white transition">
-                    <i class="fas fa-copy"></i>
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="text-xs text-gray-500 ml-1">আপনার অস্থায়ী ইমেইল:</label>
+                <div class="flex bg-black/40 rounded-xl p-1 border border-gray-800">
+                    <input type="text" id="email" class="bg-transparent w-full p-3 outline-none text-sm font-mono text-blue-300" placeholder="মেইল তৈরি করুন...">
+                    <button onclick="copyText()" class="p-3 text-gray-400 hover:text-white"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="createNewMail()" class="bg-blue-600 hover:bg-blue-500 p-3 rounded-xl font-bold transition text-sm">
+                    <i class="fas fa-plus-circle mr-1"></i> নতুন মেইল
+                </button>
+                <button onclick="refreshInbox()" class="bg-gray-800 hover:bg-gray-700 p-3 rounded-xl font-bold transition text-sm">
+                    <i class="fas fa-sync-alt mr-1" id="syncIcon"></i> রিফ্রেশ
                 </button>
             </div>
-            <p class="text-[10px] text-gray-500 mt-1 italic">* আগের মেইল থাকলে এখানে বসিয়ে রিফ্রেশ দিন।</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <button onclick="generateMail()" class="bg-emerald-600 hover:bg-emerald-500 p-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
-                <i class="fas fa-magic" id="genIcon"></i> নতুন মেইল
-            </button>
-            <button onclick="checkMail()" class="bg-blue-600 hover:bg-blue-500 p-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20">
-                <i class="fas fa-sync" id="refreshIcon"></i> রিফ্রেশ ইনবক্স
-            </button>
-        </div>
-
-        <div class="bg-slate-900/50 rounded-2xl p-4 min-h-[250px] border border-slate-800">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-4">
-                <h3 class="text-lg font-semibold text-gray-300">ইনবক্স</h3>
-                <span id="status" class="text-xs text-gray-500">অপেক্ষমাণ...</span>
+        <div class="bg-black/20 rounded-2xl p-4 min-h-[300px] border border-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-400">ইনবক্স</h3>
+                <span id="loader" class="hidden text-blue-500 text-xs italic">চেক করা হচ্ছে...</span>
             </div>
-            <div id="inbox" class="space-y-3">
-                <div class="text-center py-10">
-                    <i class="fas fa-inbox text-4xl text-slate-700 mb-2"></i>
-                    <p class="text-gray-500">কোনো মেসেজ নেই</p>
-                </div>
+            <div id="inboxList" class="space-y-3">
+                <p class="text-center text-gray-600 mt-10 text-sm">কোনো মেসেজ নেই</p>
             </div>
         </div>
     </div>
 
-    <div id="msgModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 w-full max-w-2xl rounded-2xl p-6 relative border border-slate-700">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl">&times;</button>
-            <div id="msgContent" class="mt-4 text-gray-200 overflow-y-auto max-h-[75vh]"></div>
+    <div id="msgModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 w-full max-w-lg rounded-2xl p-6 border border-gray-800 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl">&times;</button>
+            <div id="msgBody" class="mt-6 text-sm overflow-y-auto max-h-[70vh]"></div>
         </div>
     </div>
 
     <script>
-        // মেইল জেনারেট
-        async function generateMail() {
-            const icon = document.getElementById('genIcon');
-            icon.classList.add('loading-spin');
+        let token = "";
+        const API_URL = "https://api.mail.tm";
+
+        // ১. নতুন মেইল তৈরি করা
+        async function createNewMail() {
             try {
-                const res = await fetch('https://www.1secmail.com/api/v1/?action=genEmailDevice&count=1');
-                const data = await res.json();
-                document.getElementById('mailAddress').value = data[0];
-                checkMail();
-            } catch (err) {
-                alert("সার্ভার সমস্যা! VPN বন্ধ করে চেষ্টা করুন।");
-            } finally {
-                icon.classList.remove('loading-spin');
+                // ডোমেইন লিস্ট নেওয়া
+                const domRes = await fetch(`${API_URL}/domains`);
+                const domData = await domRes.json();
+                const domain = domData['hydra:member'][0].domain;
+
+                // র‍্যান্ডম ইউজারনেম ও পাসওয়ার্ড
+                const username = `user${Math.floor(Math.random() * 999999)}@${domain}`;
+                const password = "password123";
+
+                // একাউন্ট তৈরি
+                const accRes = await fetch(`${API_URL}/accounts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address: username, password: password })
+                });
+
+                if (accRes.ok) {
+                    document.getElementById('email').value = username;
+                    // টোকেন নেওয়া (লগইন)
+                    const tokenRes = await fetch(`${API_URL}/token`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ address: username, password: password })
+                    });
+                    const tokenData = await tokenRes.json();
+                    token = tokenData.token;
+                    refreshInbox();
+                } else {
+                    alert("মেইল তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+                }
+            } catch (e) {
+                alert("নেটওয়ার্ক এরর! VPN থাকলে অফ করুন।");
             }
         }
 
-        // ইনবক্স চেক
-        async function checkMail() {
-            const fullMail = document.getElementById('mailAddress').value;
-            if (!fullMail || !fullMail.includes('@')) return alert("সঠিক মেইল এড্রেস দিন!");
-            
-            const [login, domain] = fullMail.split('@');
-            const icon = document.getElementById('refreshIcon');
-            const status = document.getElementById('status');
-            
-            icon.classList.add('loading-spin');
-            status.innerText = "চেক করা হচ্ছে...";
+        // ২. ইনবক্স চেক করা
+        async function refreshInbox() {
+            if (!token) return alert("প্রথমে মেইল তৈরি করুন!");
+            const icon = document.getElementById('syncIcon');
+            const loader = document.getElementById('loader');
+            icon.classList.add('spin');
+            loader.classList.remove('hidden');
 
             try {
-                const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${login}&domain=${domain}`);
-                const emails = await res.json();
+                const res = await fetch(`${API_URL}/messages`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const messages = data['hydra:member'];
                 
-                const inbox = document.getElementById('inbox');
-                if (emails.length === 0) {
-                    inbox.innerHTML = '<div class="text-center py-10 text-gray-500">ইনবক্স খালি!</div>';
+                const list = document.getElementById('inboxList');
+                if (messages.length === 0) {
+                    list.innerHTML = '<p class="text-center text-gray-600 mt-10 text-sm">ইনবক্স খালি</p>';
                 } else {
-                    inbox.innerHTML = emails.map(msg => `
-                        <div onclick="viewMessage('${login}', '${domain}', ${msg.id})" class="bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-blue-500 cursor-pointer transition shadow-sm">
-                            <p class="text-xs text-blue-400 font-bold mb-1">${msg.from}</p>
-                            <p class="text-sm text-gray-200 font-medium truncate">${msg.subject}</p>
-                            <p class="text-[10px] text-gray-500 mt-2"><i class="far fa-clock mr-1"></i>${msg.date}</p>
+                    list.innerHTML = messages.map(m => `
+                        <div onclick="openMsg('${m.id}')" class="bg-gray-800/50 p-3 rounded-xl border border-gray-700 cursor-pointer hover:border-blue-500">
+                            <p class="text-blue-400 font-bold text-xs">${m.from.address}</p>
+                            <p class="truncate text-gray-200 text-sm">${m.subject}</p>
                         </div>
                     `).join('');
                 }
-                status.innerText = "আপডেটেড";
-            } catch (err) {
-                status.innerText = "এরর!";
             } finally {
-                icon.classList.remove('loading-spin');
+                icon.classList.remove('spin');
+                loader.classList.add('hidden');
             }
         }
 
-        // মেসেজ পড়া
-        async function viewMessage(login, domain, id) {
-            try {
-                const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${login}&domain=${domain}&id=${id}`);
-                const data = await res.json();
-                
-                document.getElementById('msgContent').innerHTML = `
-                    <div class="mb-4">
-                        <h2 class="text-xl font-bold text-blue-400">${data.subject}</h2>
-                        <p class="text-xs text-gray-500 mt-1">থেকে: ${data.from} | সময়: ${data.date}</p>
-                    </div>
-                    <div class="bg-white text-black p-4 rounded-xl overflow-x-auto">
-                        ${data.htmlBody ? data.htmlBody : `<pre class="whitespace-pre-wrap">${data.body}</pre>`}
-                    </div>
-                `;
-                document.getElementById('msgModal').classList.remove('hidden');
-            } catch (err) {
-                alert("মেসেজ লোড করা যায়নি!");
-            }
+        // ৩. মেসেজ পড়া
+        async function openMsg(id) {
+            const res = await fetch(`${API_URL}/messages/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            document.getElementById('msgBody').innerHTML = `
+                <h2 class="font-bold text-blue-400 mb-2">${data.subject}</h2>
+                <div class="bg-white text-black p-4 rounded-xl shadow-inner">${data.html || data.text}</div>
+            `;
+            document.getElementById('msgModal').classList.remove('hidden');
         }
 
-        function copyEmail() {
-            const emailField = document.getElementById('mailAddress');
-            emailField.select();
+        function copyText() {
+            const el = document.getElementById('email');
+            el.select();
             document.execCommand('copy');
             alert("কপি হয়েছে!");
         }
