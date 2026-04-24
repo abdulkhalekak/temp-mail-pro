@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMP PRO v8 - Smart Restore</title>
+    <title>প্রো টেম্প মেইল v9 - স্মার্ট রিস্টোর</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -11,7 +11,7 @@
         .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        #toast { visibility: hidden; min-width: 280px; background: #3b82f6; color: #fff; text-align: center; border-radius: 50px; padding: 14px; position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: bold; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
+        #toast { visibility: hidden; min-width: 250px; background: #3b82f6; color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: bold; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -22,45 +22,37 @@
     <div id="toast">মেসেজ</div>
 
     <div class="max-w-md w-full glass rounded-[2.5rem] p-7 shadow-2xl">
-        <header class="text-center mb-10">
-            <h1 class="text-3xl font-black text-white tracking-tighter">TEMP <span class="text-blue-500 font-serif italic">PRO</span></h1>
-            <div class="h-1 w-12 bg-blue-500 mx-auto mt-2 rounded-full"></div>
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-black text-white tracking-tighter uppercase">Temp <span class="text-blue-500">Pro</span></h1>
         </header>
 
         <div class="space-y-6">
             <div class="relative">
-                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1 mb-2 block">আপনার ইমেইল এড্রেস (ইডিট করতে পারেন)</label>
-                <div class="relative group">
-                    <input type="text" id="emailDisplay" 
-                        class="bg-black/60 w-full p-4 rounded-2xl outline-none border border-gray-800 focus:border-blue-600 transition font-mono text-sm text-blue-300" 
-                        placeholder="মেইল এখানে লিখুন...">
-                    <button onclick="copyMail()" class="absolute right-4 top-3.5 text-gray-500 hover:text-white transition">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1 mb-2 block">ইমেইল এড্রেস (ইডিট করা যাবে)</label>
+                <input type="text" id="emailDisplay" class="bg-black/60 w-full p-4 rounded-2xl outline-none border border-gray-800 focus:border-blue-600 transition font-mono text-sm text-blue-300" placeholder="মেইল এখানে লিখুন...">
+                <button onclick="copyMail()" class="absolute right-4 bottom-3.5 text-gray-500 hover:text-white transition">
+                    <i class="fas fa-copy"></i>
+                </button>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <button onclick="createNewAccount()" class="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl font-bold transition transform active:scale-95 shadow-lg shadow-blue-900/40">
-                    <i class="fas fa-plus-circle mr-2"></i>নতুন মেইল
+                    <i class="fas fa-magic mr-2"></i>নতুন মেইল
                 </button>
                 <button onclick="smartRestore()" class="bg-slate-800 hover:bg-slate-700 text-white p-4 rounded-2xl font-bold transition border border-gray-700">
                     <i class="fas fa-history mr-2"></i>রিস্টোর
                 </button>
             </div>
             
-            <button onclick="fetchMessages()" class="w-full bg-slate-900/50 hover:bg-slate-800 p-4 rounded-2xl font-bold border border-gray-800 transition flex items-center justify-center gap-3 shadow-inner">
+            <button onclick="fetchMessages()" class="w-full bg-slate-900/50 hover:bg-slate-800 p-4 rounded-2xl font-bold border border-gray-800 transition flex items-center justify-center gap-3">
                 <i class="fas fa-sync-alt" id="refreshIcon"></i> রিফ্রেশ ইনবক্স
             </button>
         </div>
 
         <div class="mt-8">
-            <div class="flex justify-between items-center mb-4 px-1">
-                <h3 class="text-xs font-bold text-gray-600 uppercase tracking-widest">ইনবক্স</h3>
-                <span id="statusLabel" class="text-[9px] text-blue-500/50 italic font-bold">LIVE</span>
-            </div>
+            <h3 class="text-xs font-bold text-gray-600 uppercase mb-4 px-1">ইনবক্স</h3>
             <div id="inbox" class="space-y-3 min-h-[150px] max-h-[300px] overflow-y-auto pr-2">
-                <p class="text-center text-gray-700 italic py-12">কোনো মেসেজ নেই</p>
+                <p class="text-center text-gray-700 italic py-10">কোনো মেসেজ নেই</p>
             </div>
         </div>
     </div>
@@ -69,11 +61,8 @@
         <div class="bg-gray-900 w-full max-w-xl rounded-[2rem] p-6 border border-gray-800 relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-3xl text-gray-500">&times;</button>
             <div id="otpSection" class="hidden mb-4 p-4 bg-blue-600/10 border border-blue-500/30 rounded-2xl flex justify-between items-center">
-                <div>
-                    <p class="text-[9px] text-blue-400 font-bold uppercase">ওটিপি কোড</p>
-                    <span id="otpVal" class="text-2xl font-black text-white tracking-widest font-mono"></span>
-                </div>
-                <button onclick="copyOTP()" class="bg-blue-600 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-lg">COPY</button>
+                <span id="otpVal" class="text-2xl font-black text-white tracking-widest font-mono"></span>
+                <button onclick="copyOTP()" class="bg-blue-600 px-4 py-2 rounded-xl text-xs font-bold">COPY OTP</button>
             </div>
             <div id="msgContent" class="overflow-y-auto max-h-[60vh] bg-white text-black p-4 rounded-xl text-sm"></div>
         </div>
@@ -87,13 +76,6 @@
             const t = document.getElementById("toast");
             t.innerText = msg; t.className = "show";
             setTimeout(() => t.className = "", 3000);
-        }
-
-        // হিস্টোরি সেভ রাখা
-        function saveToHistory(email, token) {
-            let history = JSON.parse(localStorage.getItem('mail_history') || '{}');
-            history[email] = token;
-            localStorage.setItem('mail_history', JSON.stringify(history));
         }
 
         async function createNewAccount() {
@@ -118,17 +100,20 @@
                     body: JSON.stringify({ address: email, password: pass })
                 });
                 const tokenData = await tokenRes.json();
-                
                 userToken = tokenData.token;
                 document.getElementById('emailDisplay').value = email;
-                saveToHistory(email, userToken);
+
+                // মেমোরিতে সেভ রাখা
+                let history = JSON.parse(localStorage.getItem('mail_history') || '{}');
+                history[email] = userToken;
+                localStorage.setItem('mail_history', JSON.stringify(history));
+
                 showToast("নতুন মেইল তৈরি হয়েছে!");
                 fetchMessages();
-            } catch (e) { showToast("এরর হয়েছে! নেট চেক করুন।"); }
+            } catch (e) { showToast("সার্ভার এরর!"); }
             finally { icon.classList.remove('spin'); }
         }
 
-        // স্মার্ট রিস্টোর (পাসওয়ার্ড ছাড়া)
         function smartRestore() {
             const email = document.getElementById('emailDisplay').value.trim();
             const history = JSON.parse(localStorage.getItem('mail_history') || '{}');
@@ -138,12 +123,12 @@
                 showToast("মেইল রিস্টোর সফল!");
                 fetchMessages();
             } else {
-                showToast("এই মেইলের টোকেন মেমোরিতে নেই!");
+                showToast("এই মেইলের তথ্য মেমোরিতে নেই!");
             }
         }
 
         async function fetchMessages() {
-            if(!userToken) return showToast("প্রথমে মেইল তৈরি বা রিস্টোর করুন!");
+            if(!userToken) return showToast("আগে মেইল তৈরি বা রিস্টোর করুন!");
             const icon = document.getElementById('refreshIcon');
             icon.classList.add('spin');
             try {
@@ -155,4 +140,48 @@
                 const list = document.getElementById('inbox');
                 
                 if(messages.length === 0) {
-                    list.innerHTML = `<p
+                    list.innerHTML = `<p class="text-center text-gray-700 py-10 italic">ইনবক্স খালি</p>`;
+                } else {
+                    list.innerHTML = messages.map(m => `
+                        <div onclick="readMsg('${m.id}')" class="bg-slate-900/80 p-4 rounded-2xl border border-gray-800 cursor-pointer hover:border-blue-600 transition">
+                            <p class="text-[10px] text-blue-500 font-bold mb-1 uppercase">${m.from.address}</p>
+                            <p class="text-white text-sm truncate font-medium">${m.subject || '(No Subject)'}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch(e) { showToast("ইনবক্স লোড করা যাচ্ছে না!"); }
+            finally { icon.classList.remove('spin'); }
+        }
+
+        async function readMsg(id) {
+            const res = await fetch(`${API}/messages/${id}`, {
+                headers: { 'Authorization': `Bearer ${userToken}` }
+            });
+            const data = await res.json();
+            const content = data.html ? data.html[0] : data.text;
+            
+            const code = content.match(/\b\d{4,8}\b/);
+            if(code) {
+                document.getElementById('otpVal').innerText = code[0];
+                document.getElementById('otpSection').classList.remove('hidden');
+            } else { document.getElementById('otpSection').classList.add('hidden'); }
+
+            document.getElementById('msgContent').innerHTML = content;
+            document.getElementById('msgModal').classList.remove('hidden');
+        }
+
+        function copyMail() {
+            const el = document.getElementById('emailDisplay');
+            el.select(); document.execCommand('copy');
+            showToast("কপি হয়েছে!");
+        }
+
+        function copyOTP() {
+            navigator.clipboard.writeText(document.getElementById('otpVal').innerText);
+            showToast("কোড কপি হয়েছে!");
+        }
+
+        function closeModal() { document.getElementById('msgModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
